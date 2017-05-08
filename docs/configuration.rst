@@ -34,7 +34,7 @@ HIGHLY Recommended:
 Sleeptime
 ---------
 
-- ``sleeptimeactive`` is how long the bot will "rest" (in seconds) between running while the bot has lends waiting to be filled.
+- ``sleeptimeactive`` is how long the bot will "rest" (in seconds) between running while the bot has loan offers waiting to be filled.
 
     - Default value: 60 seconds
     - Allowed range: 1 to 3600 seconds
@@ -51,11 +51,11 @@ Sleeptime
 Min and Max Rates
 -----------------
 
-- ``mindailyrate`` is the minimum rate (in percent) that the bot will allow lends to open.
+- ``mindailyrate`` is the minimum rate (in percent) that the bot will allow offer loans at.
 
     - Default value: 0.005 percent
     - Allowed range: 0.0031 to 5 percent
-    - It is not worth it to settle at a low rate, 0.0031% every day for a year comes out to about 1%. That is worse than bank interest.
+    - 0.0031% every day for a year, works out around 1%. This is less than most bank accounts and is considered not worth while.
     - The current default value is a optimistic but very viable for the more high volume currencies. Not viable for lending DOGE, for example.
 
 - ``maxdailyrate`` is the maximum rate (in percent) that the bot will allow lends to open.
@@ -69,20 +69,20 @@ Spreading your Lends
 
 If ``spreadlend = 1`` and ``gapbottom = 0``, it will behave as simple lending bot lending at lowest possible offer.
 
-- ``spreadlend`` is the amount (as an integer) of separate lends the bot will split your balance into across the order book.
+- ``spreadlend`` is the amount (as an integer) of separate loans the bot will split your balance into across the order book.
 
     - Default value: 3
     - Allowed range: 1 to 20 (1 is the same as disabling)
-    - The lends are distributed evenly between gapbottom and gaptop.
+    - The loans are distributed evenly between gapbottom and gaptop.
     - This allows the bot to benefit from spikes in lending rate but can result in loan fragmentation (not really a bad thing since the bot has to deal with it.)
 
-- ``gapbottom`` is how far into the lending book (in percent of YOUR balance for the respective coin) the bot will go to start spreading lends.
+- ``gapbottom`` is how far into the lending book (in percent of YOUR total balance for the respective coin) the bot will go, to start spreading loans.
 
     - Default value: 10 percent
     - Allowed range: 0 to <arbitrary large number> percent
     - 10% gapbottom is recommended to skip past dust at the bottom of the lending book, but if you have a VERY high volume this will cause issues as you stray to far away from the most competitive bid.
 
-- ``gaptop`` is how far into the lending book (in percent of YOUR balance for the respective coin) the bot will go to stop spreading lends.
+- ``gaptop`` is how far into the lending book (in percent of YOUR balance for the respective coin) the bot will go to stop spreading loans.
 
     - Default value: 200 percent
     - Allowed range: 0 to <arbitrary large number> percent
@@ -144,6 +144,7 @@ Very few situations require you to change these settings.
     - This hides your coins from appearing in walls.
     - Allows you to catch a higher rate if it spikes past your ``mindailyrate``.
     - Not necessarily recommended if used with ``analyseCurrencies`` with an aggressive ``lendingStyle``, as the bot may miss short-lived rate spikes.
+    - If you are using the ``analyseCurrencies`` option, you will likely see a lot of ``Not lending BTC due to rate below 0.9631%`` type messages in the logs. This is normal.
 
 - ``endDate`` Bot will try to make sure all your loans are done by this date so you can withdraw or do whatever you need.
 
@@ -324,6 +325,10 @@ The bot supports sending notifications for serveral different events on several 
 Notification events
 ~~~~~~~~~~~~~~~~~~~
 
+- ``notify_new_loans``
+
+    - Sends a notification each time a loan offer is filled.
+
 - ``notify_tx_coins``
 
     - This will send a notification if any coins are transferred from your exchange account, to your lending account. You must have ``transferableCurrencies`` enabled for this to work.  Then you should set ``notify_tx_coins = True``.
@@ -397,3 +402,16 @@ Detailed
         b. Start a conversation with the BotFather and type /setjoingroups, then follow the questsions he asks.
         c. Click on the message we sent earlier from the bot, then click on the bot's name in the conversation. You should see 'Add To Group'. Click this and add it to the new group you created.
         d. Now you should be able to add the ``@nameOfChannel`` to your ``default.cfg`` file and post all the updates there too. Make sure the list is comma separated and you have the '@' infront of the channel name. This is only done for names, not Chat IDs.
+
+Pushbullet notifications
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+To enable `Pushbullet <https://www.pushbullet.com/>`_ notifications, you first need to create an API key and then discover your device ID.
+
+Visit your `Account Settings <https://www.pushbullet.com/#settings/account>`_ and click 'Create Access Token'. Add this to the config file as shown below.
+
+You then need to visit this `documentation page <https://docs.pushbullet.com/#list-devices>`_ and run the example curl command for listing your devices (be sure to substitute your API token as created in the previous step). Copy the value listed for 'iden' into the config file as shown below.::
+
+    pushbullet = True
+    pushbullet_token = l.2mDDvy4RRdzcQN9LEWSy22amS7u3LJZ1
+    pushbullet_deviceid = ujpah72o0sjAoRtnM0jb
